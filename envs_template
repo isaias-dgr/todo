@@ -1,0 +1,12 @@
+echo "😎 Export envs"
+
+export PROJ_NAME="mstodo"
+export PROJ_ENV="dev"
+export MYSQL_DATABASE="${PROJ_ENV}_${PROJ_NAME}"
+export MYSQL_HOST="${PROJ_ENV}-db"
+export MYSQL_PORT="3306"
+export MYSQL_USER="user_${PROJ_ENV}_${PROJ_NAME}"
+# this is for develop
+export MYSQL_PASSWORD="ab22cd66-56d9-4b65-80d2-f675c0afba49"
+export MYSQL_ROOT_PASSWORD="1e0f6ecd-396d-47e2-a689-12712d594159"
+export MYSQL_CONN="$MYSQL_USER:$MYSQL_PASSWORD@tcp($MYSQL_HOST:$MYSQL_PORT)/$MYSQL_DATABASE"

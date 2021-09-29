@@ -1,0 +1,48 @@
+version: '3.4'
+
+services:
+  ms-todo-db:
+    image: mysql
+    container_name: db_dev_todo
+    command: mysqld --user=root
+    ports:
+      - '3306:3306'
+    environment:
+      - 'MYSQL_DATABASE=${MYSQL_DATABASE}'
+      - 'MYSQL_USER=${MYSQL_USER}'
+      - 'MYSQL_PASSWORD=${MYSQL_PASSWORD}'
+      - 'MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}'
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 5s
+      retries: 10
+
+  ms-todo:
+    build: 
+      context: .
+      target: dev
+    entrypoint: ["air", "-d"]
+    container_name: dev_todo
+    depends_on:
+      - ms-todo-db
+    environment:
+      - 'MYSQL_HOST=ms-todo-db'
+      - 'MYSQL_PORT=3306'
+      - 'MYSQL_DATABASE=${MYSQL_DATABASE}'
+      - 'MYSQL_PASSWORD=${MYSQL_PASSWORD}'
+      - 'MYSQL_USER=${MYSQL_USER}'
+
+    ports:
+      - '8080:8080'
+      - '2345:2345'
+    volumes:
+      - .:/usr/github.com/isaias-dgr/todo:rw
+
+  adminer:
+    image: adminer
+    container_name: adminer_db_dev_todo
+    restart: always
+    depends_on:
+      - ms-todo-db
+    ports:
+      - '8081:8080'
