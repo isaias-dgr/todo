@@ -86,8 +86,8 @@ test-exec:
 
 .PHONY: lint
 lint: start
-	docker-compose -p ${project} exec ${service} gofmt -d -l -s -e .
-	docker-compose -p ${project} exec ${service} go vet ${project-path}/...
+	docker-compose -p ${project} exec -T ${service} gofmt -d -l -s -e .
+	docker-compose -p ${project} exec -T ${service} go vet ${project-path}/...
 
 .PHONY: lint-fix
 lint-fix: start
@@ -95,7 +95,7 @@ lint-fix: start
 
 .PHONY: test-cov
 test-cov:
-	docker-compose -p ${project} exec ${service} go test -coverprofile=./tmp/profile.out ${project-path}/...
+	docker-compose -p ${project} exec -T ${service} go test -coverprofile=./tmp/profile.out ${project-path}/...
 
 .PHONY: commit-hash
 commit-hash:
