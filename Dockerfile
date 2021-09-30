@@ -7,7 +7,7 @@ RUN apk update && apk upgrade && \
     mkdir -p /usr/github.com/isaias-dgr/todo && \
     go install github.com/go-delve/delve/cmd/dlv@latest && \
     go install github.com/pressly/goose/v3/cmd/goose@latest && \
-    go install honnef.co/go/tools/cmd/staticcheck@latest && \
+    go install honnef.co/go/tools/cmd/staticcheck@latest
 
 WORKDIR /usr/github.com/isaias-dgr/todo
 COPY . /usr/github.com/isaias-dgr/todo
