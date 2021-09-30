@@ -48,14 +48,14 @@ func (t *TaskHandler) FetchTasks(w http.ResponseWriter, r *http.Request) {
 func (t *TaskHandler) InsertTask(w http.ResponseWriter, r *http.Request) {
 	t.l.Infow("Insert", "url", r.URL, "method", r.Method)
 	var task domain.Task
-	if err := t.DecoderBody(r.Body, &task); err != nil{
+	if err := t.DecoderBody(r.Body, &task); err != nil {
 		errorResponse(w, http.StatusBadRequest, err.Error())
-		return 
+		return
 	}
 
-	if err := validate(&task); err != nil{
+	if err := validate(&task); err != nil {
 		errorResponse(w, http.StatusBadRequest, err.Error())
-		return 
+		return
 	}
 	t.TuseCase.Insert(r.Context(), &task)
 	makeResponse(w, http.StatusAccepted, task, nil, 0)
@@ -65,14 +65,14 @@ func (t *TaskHandler) UpdateTask(w http.ResponseWriter, r *http.Request) {
 	t.l.Infow("Update", "url", r.URL, "method", r.Method)
 	var task domain.Task
 
-	if err := t.DecoderBody(r.Body,&task); err != nil{
+	if err := t.DecoderBody(r.Body, &task); err != nil {
 		errorResponse(w, http.StatusBadRequest, err.Error())
-		return 
+		return
 	}
 
-	if err := validate(&task); err != nil{
+	if err := validate(&task); err != nil {
 		errorResponse(w, http.StatusBadRequest, err.Error())
-		return 
+		return
 	}
 	vars := mux.Vars(r)
 	t.TuseCase.Update(r.Context(), vars["task_id"], &task)
