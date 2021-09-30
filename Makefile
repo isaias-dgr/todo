@@ -1,5 +1,6 @@
 default: start
 
+SHELL := /bin/bash
 project:=mstodo
 project-path:=github.com/isaias-dgr/todo
 service:=ms-todo
@@ -8,6 +9,7 @@ COMMIT_HASH = $(shell git rev-parse --verify HEAD)
 
 .PHONY: start
 start:
+	source envs_template
 	docker-compose -p ${project} up -d
 
 .PHONY: stop
@@ -80,7 +82,7 @@ test: start test-exec
 
 .PHONY: test-exec
 test-exec:
-	docker-compose -p ${project} exec ${service} go test ${project-path}/...
+	docker-compose -p ${project} exec -T ${service} go test ${project-path}/...
 
 .PHONY: lint
 lint: start
