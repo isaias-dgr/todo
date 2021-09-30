@@ -95,7 +95,7 @@ lint-fix: start
 
 .PHONY: test-cov
 test-cov: start
-	docker-compose -p ${project} exec ${service} go test -coverprofile=./tmp/profile.out ${project-path}/...
+	docker-compose -p ${project} exec -T ${service} go test -coverprofile=./tmp/profile.out ${project-path}/...
 
 .PHONY: commit-hash
 commit-hash:
