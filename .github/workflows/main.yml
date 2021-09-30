@@ -11,6 +11,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: Run UnitTest
-        run: make test
+      - name: 🧪 Run UnitTest
+        run: make test-cov
+      - name: 💡 Run Lint
+        run: make lint
  
