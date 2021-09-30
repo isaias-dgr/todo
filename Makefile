@@ -88,6 +88,7 @@ test-exec:
 lint: start
 	docker-compose -p ${project} exec -T ${service} gofmt -d -l -s -e .
 	docker-compose -p ${project} exec -T ${service} go vet ${project-path}/...
+	docker-compose -p ${project} exec -T ${service} staticcheck ./...
 
 .PHONY: lint-fix
 lint-fix: start
