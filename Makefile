@@ -82,7 +82,7 @@ test: start test-exec
 
 .PHONY: test-exec
 test-exec:
-	docker-compose -p ${project} exec ${service} go test ${project-path}/...
+	docker-compose -p ${project} -T exec ${service} go test ${project-path}/...
 
 .PHONY: lint
 lint: start
