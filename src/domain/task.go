@@ -23,7 +23,7 @@ Total int
 func NewTasks(ts []Task, total int) *Tasks {
 return &Tasks{
 Data:  ts,
-Total: total,
+Total: &total,
 }
 }
 
