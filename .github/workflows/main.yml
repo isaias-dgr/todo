@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: 🧪 Run Enviroment test
-        run: make up
+        run: make start
       - name: 🧪 Run UnitTest
         run: make test-cov
       - name: 💡 Run Lint
