@@ -78,24 +78,24 @@ mysql:
 	docker-compose -p ${project} exec ${service}-db mysql -u root -p
 
 .PHONY: test
-test: start test-exec
+test: test-exec
 
 .PHONY: test-exec
 test-exec:
 	docker-compose -p ${project} exec -T ${service} go test ${project-path}/...
 
 .PHONY: lint
-lint: start
+lint:
 	docker-compose -p ${project} exec -T ${service} gofmt -d -l -s -e .
 	docker-compose -p ${project} exec -T ${service} go vet ${project-path}/...
 	docker-compose -p ${project} exec -T ${service} staticcheck ./...
 
 .PHONY: lint-fix
-lint-fix: start
+lint-fix:
 	docker-compose -p ${project} exec ${service} go fmt ${project-path}/...
 
 .PHONY: test-cov
-test-cov: start
+test-cov:
 	docker-compose -p ${project} exec -T ${service} go test -coverprofile=./tmp/profile.out ${project-path}/...
 
 .PHONY: commit-hash

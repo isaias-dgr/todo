@@ -1,4 +1,4 @@
-name: Push request order
+name: 👷 Push request order
 
 on:
   pull_request:
@@ -12,6 +12,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      - name: 🧪 Run Enviroment test
+        run: make up
       - name: 🧪 Run UnitTest
         run: make test-cov
       - name: 💡 Run Lint
