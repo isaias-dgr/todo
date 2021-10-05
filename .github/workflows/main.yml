@@ -1,9 +1,9 @@
-name: Push request order
+name: 👷 CI/CD todo
 
 on:
   pull_request:
+    branches: [main]
     types: [opened, synchronize]
-
 
 jobs:
   build:
@@ -11,6 +11,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: Run UnitTest
-        run: make test
+      - name: 🤖 Run Enviroment test
+        run: make start
+      - name: 🧪 Run UnitTest
+        run: make test-cov
+      - name: 💡 Run Lint
+        run: make lint
  
