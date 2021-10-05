@@ -3,7 +3,7 @@ echo "😎 Export envs"
 export PROJ_NAME="mstodo"
 export PROJ_ENV="dev"
 export MYSQL_DATABASE="${PROJ_ENV}_${PROJ_NAME}"
-export MYSQL_HOST="${PROJ_ENV}-db"
+export MYSQL_HOST="ms-todo-db"
 export MYSQL_PORT="3306"
 export MYSQL_USER="user_${PROJ_ENV}_${PROJ_NAME}"
 # this is for develop
