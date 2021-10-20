@@ -15,12 +15,19 @@ type Task struct {
 	CreatedAt   *time.Time `json:"created_at,omitempty"`
 }
 
+func NewTask(t, d string) *Task {
+	return &Task{
+		Title:       t,
+		Description: d,
+	}
+}
+
 type Tasks struct {
-	Data  []Task
+	Data  []*Task
 	Total int
 }
 
-func NewTasks(ts []Task, total int) *Tasks {
+func NewTasks(ts []*Task, total int) *Tasks {
 	return &Tasks{
 		Data:  ts,
 		Total: total,
