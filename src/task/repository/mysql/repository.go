@@ -90,17 +90,11 @@ func (m *taskRepository) count(ctx context.Context) (total int, err error) {
 	return total, nil
 }
 
-func (m *taskRepository) GetByID(ctx context.Context, id string) (t *domain.Task, err error) {
-	raw_uuid, err := uuid.Parse(id)
-	if err != nil {
-		m.l.Error(err.Error())
-		return nil, errors.New("uuid_format")
-	}
 
-	binary_uuid, err := raw_uuid.MarshalBinary()
-	if err != nil {
-		m.l.Error(err.Error())
-		return nil, errors.New("uuid_format")
+func (m *taskRepository) GetByID(ctx context.Context, id string) (t *domain.Task, err error) {
+	_, binary_uuid, err := m.parse(id)
+	if err != nil{
+		return nil, err
 	}
 
 	tasks, err := m.fetch(ctx, `WHERE id=? `, []interface{}{binary_uuid})
@@ -157,20 +151,12 @@ func (m *taskRepository) Insert(ctx context.Context, ta *domain.Task) (err error
 }
 
 func (m *taskRepository) Update(ctx context.Context, id string, ta *domain.Task) (err error) {
-	raw_uuid, err := uuid.Parse(id)
-	if err != nil {
-		m.l.Error(err.Error())
-		return errors.New("uuid_format")
+	raw_uuid, binary_uuid, err := m.parse(id)
+	if err != nil{
+		return err
 	}
-
-	binary_uuid, err := raw_uuid.MarshalBinary()
-	if err != nil {
-		m.l.Error(err.Error())
-		return errors.New("uuid_format")
-	}
-
 	updated_at := time.Now()
-	ta.ID = raw_uuid
+	ta.ID = *raw_uuid
 	ta.UpdatedAt = &updated_at
 
 	query := `UPDATE task set title=?, description=?, updated_at=? WHERE ID = ?`
@@ -199,19 +185,11 @@ func (m *taskRepository) Update(ctx context.Context, id string, ta *domain.Task)
 
 func (m *taskRepository) Delete(ctx context.Context, id string) (err error) {
 	query := "DELETE FROM task WHERE id=?"
-
-	raw_uuid, err := uuid.Parse(id)
-	if err != nil {
-		m.l.Error(err.Error())
-		return errors.New("uuid_generate")
+	_, binary_uuid, err := m.parse(id)
+	if err != nil{
+		return err
 	}
-
-	binary_uuid, err := raw_uuid.MarshalBinary()
-	if err != nil {
-		m.l.Error(err.Error())
-		return errors.New("uuid_generate")
-	}
-
+	
 	stmt, err := m.Conn.PrepareContext(ctx, query)
 	if err != nil {
 		m.l.Error(err.Error())
@@ -235,4 +213,20 @@ func (m *taskRepository) Delete(ctx context.Context, id string) (err error) {
 		return errors.New("multi_delete")
 	}
 	return
+}
+
+func (m *taskRepository) parse(id string) (*uuid.UUID, []byte, error) {
+	raw_uuid, err := uuid.Parse(id)
+	if err != nil {
+		m.l.Error(err.Error())
+		return nil,nil, errors.New("uuid_format")
+	}
+
+	binary_uuid, err := raw_uuid.MarshalBinary()
+	if err != nil {
+		m.l.Error(err.Error())
+		return nil, nil, errors.New("uuid_format")
+	}
+
+	return &raw_uuid, binary_uuid, err
 }

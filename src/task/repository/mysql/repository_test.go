@@ -455,7 +455,7 @@ func (s *SuiteRepository) TestDelete() {
 	s.Run("When test uuid without format return error", func() {
 		err := s.repo.Delete(context.TODO(),"00000000")
 		s.Error(err)
-		s.Equal("uuid_generate", err.Error())
+		s.Equal("uuid_format", err.Error())
 	})
 
 	s.Run("When the prepare context faild must return error", func() {

@@ -6,6 +6,7 @@ RUN apk update && apk upgrade && \
     air -v && \
     curl -sfL https://raw.githubusercontent.com/reviewdog/reviewdog/master/install.sh | sh -s && \
     mkdir -p /usr/github.com/isaias-dgr/todo && \
+    mkdir -p /usr/github.com/isaias-dgr/todo/tmp && \
     go install github.com/go-delve/delve/cmd/dlv@latest && \
     go install github.com/pressly/goose/v3/cmd/goose@latest && \
     go install honnef.co/go/tools/cmd/staticcheck@latest
