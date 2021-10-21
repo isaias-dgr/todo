@@ -51,7 +51,7 @@ func (s *SuiteRepository) TestFetch() {
 			AddRow(binary_uuid, mockTask[1].Title, mockTask[1].Description,
 				mockTask[1].CreatedAt, mockTask[1].UpdatedAt)
 
-		q := "SELECT \\* FROM task ORDER BY created_at DESC LIMIT \\? OFFSET \\?"
+		q := "SELECT \\* FROM task ORDER BY created_at ASC LIMIT \\? OFFSET \\?"
 		s.mockSQL.ExpectQuery(q).WithArgs(3, 0).WillReturnRows(data)
 
 		query_count := "SELECT count\\(\\*\\) FROM task"
@@ -73,7 +73,7 @@ func (s *SuiteRepository) TestFetch() {
 	})
 
 	s.Run("When exec query fails must return error", func(){
-		q := "SELECT \\* FROM task ORDER BY created_at DESC LIMIT \\? OFFSET \\?"
+		q := "SELECT \\* FROM task ORDER BY created_at ASC LIMIT \\? OFFSET \\?"
 		s.mockSQL.ExpectQuery(q).WithArgs(3, 0).WillReturnError(errors.New("D error"))
 		filter := &domain.Filter{
 			Offset: 0,
@@ -89,7 +89,7 @@ func (s *SuiteRepository) TestFetch() {
 	s.Run("When db return incorrect type data", func(){
 		rows := []string{"id", "title", "description", "updated_at", "created_at"}
 		data := sqlmock.NewRows(rows).AddRow("uuid",  "T", "D", "C", "U")
-		q := "SELECT \\* FROM task ORDER BY created_at DESC LIMIT \\? OFFSET \\?"
+		q := "SELECT \\* FROM task ORDER BY created_at ASC LIMIT \\? OFFSET \\?"
 		s.mockSQL.ExpectQuery(q).WithArgs(3, 0).WillReturnRows(data)
 
 		filter := &domain.Filter{
@@ -118,7 +118,7 @@ func (s *SuiteRepository) TestFetch() {
 				mockTask[1].CreatedAt, mockTask[1].UpdatedAt).
 			RowError(1, errors.New("row_error"))
 
-		q := "SELECT \\* FROM task ORDER BY created_at DESC LIMIT \\? OFFSET \\?"
+		q := "SELECT \\* FROM task ORDER BY created_at ASC LIMIT \\? OFFSET \\?"
 		s.mockSQL.ExpectQuery(q).WithArgs(3, 0).WillReturnRows(data)
 
 		filter := &domain.Filter{
@@ -145,7 +145,7 @@ func (s *SuiteRepository) TestFetch() {
 			AddRow(binary_uuid, mockTask[1].Title, mockTask[1].Description,
 				mockTask[1].CreatedAt, mockTask[1].UpdatedAt)
 
-		q := "SELECT \\* FROM task ORDER BY created_at DESC LIMIT \\? OFFSET \\?"
+		q := "SELECT \\* FROM task ORDER BY created_at ASC LIMIT \\? OFFSET \\?"
 		s.mockSQL.ExpectQuery(q).WithArgs(3, 0).WillReturnRows(data)
 
 		query_count := "SELECT count\\(\\*\\) FROM task"
@@ -178,7 +178,7 @@ func (s *SuiteRepository) TestFetch() {
 			AddRow(binary_uuid, mockTask[1].Title, mockTask[1].Description,
 				mockTask[1].CreatedAt, mockTask[1].UpdatedAt)
 
-		q := "SELECT \\* FROM task ORDER BY created_at DESC LIMIT \\? OFFSET \\?"
+		q := "SELECT \\* FROM task ORDER BY created_at ASC LIMIT \\? OFFSET \\?"
 		s.mockSQL.ExpectQuery(q).WithArgs(3, 0).WillReturnRows(data)
 
 		query_count := "SELECT count\\(\\*\\) FROM task"
@@ -210,7 +210,7 @@ func (s *SuiteRepository) TestFetch() {
 			AddRow(binary_uuid, mockTask[1].Title, mockTask[1].Description,
 				mockTask[1].CreatedAt, mockTask[1].UpdatedAt)
 
-		q := "SELECT \\* FROM task ORDER BY created_at DESC LIMIT \\? OFFSET \\?"
+		q := "SELECT \\* FROM task ORDER BY created_at ASC LIMIT \\? OFFSET \\?"
 		s.mockSQL.ExpectQuery(q).WithArgs(3, 0).WillReturnRows(data)
 
 		query_count := "SELECT count\\(\\*\\) FROM task"
@@ -352,7 +352,7 @@ func (s *SuiteRepository) TestInsert() {
 			WillReturnResult(sqlmock.NewResult(1, 2))
 		err := s.repo.Insert(context.TODO(),task)
 		s.NotNil(err)
-		s.Equal("multi_insert", err.Error())
+		s.Equal("conflict_insert", err.Error())
 	})
 }
 
@@ -433,7 +433,7 @@ func (s *SuiteRepository) TestUpdate() {
 			WillReturnResult(sqlmock.NewResult(1, 2))
 		err := s.repo.Update(context.TODO(), raw_uuid.String(), task)
 		s.NotNil(err)
-		s.Equal("multi_update", err.Error())
+		s.Equal("conflict_update", err.Error())
 	})
 }
 
@@ -505,7 +505,7 @@ func (s *SuiteRepository) TestDelete() {
 			WillReturnResult(sqlmock.NewResult(1, 2))
 		err := s.repo.Delete(context.TODO(), raw_uuid.String())
 		s.NotNil(err)
-		s.Equal("multi_delete", err.Error())
+		s.Equal("conflict_delete", err.Error())
 	})
 }
 
