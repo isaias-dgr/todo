@@ -24,7 +24,7 @@ func NewtaskRepository(Conn *sql.DB, logger *zap.SugaredLogger) domain.TaskRepos
 }
 
 func (m *taskRepository) Fetch(ctx context.Context, f *domain.Filter) (ts *domain.Tasks, err error) {
-	query := `ORDER BY created_at DESC LIMIT ? OFFSET ?`
+	query := `ORDER BY created_at ASC LIMIT ? OFFSET ?`
 	filter := []interface{}{f.Limit, f.Offset}
 
 	tasks, err := m.fetch(ctx, query, filter)
@@ -145,7 +145,7 @@ func (m *taskRepository) Insert(ctx context.Context, ta *domain.Task) (err error
 	}
 	if affect != 1 {
 		m.l.Errorf("Weird  Behavior. Total Affected: %d", affect)
-		return errors.New("multi_insert")
+		return errors.New("conflict_insert")
 	}
 	return
 }
@@ -178,7 +178,7 @@ func (m *taskRepository) Update(ctx context.Context, id string, ta *domain.Task)
 	}
 	if affect != 1 {
 		m.l.Errorf("Weird  Behavior. Total Affected: %d", affect)
-		return errors.New("multi_update")
+		return errors.New("conflict_update")
 	}
 	return
 }
@@ -210,7 +210,7 @@ func (m *taskRepository) Delete(ctx context.Context, id string) (err error) {
 
 	if rowsAfected != 1 {
 		m.l.Errorf("Weird  Behavior. Total Affected: %d", rowsAfected)
-		return errors.New("multi_delete")
+		return errors.New("conflict_delete")
 	}
 	return
 }

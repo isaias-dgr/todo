@@ -285,6 +285,77 @@ func (s *SuiteRepository) TestGetByID() {
 	})
 }
 
+func (s *SuiteRepository) TestInsert() {
+	s.Run("Success test return a task", func() {
+		task := domain.NewTask("Title new", "Description new")
+		q := "INSERT task SET id=\\?, title=\\?, description=\\?, created_at=\\?, updated_at=\\?"
+		s.mockSQL.
+			ExpectPrepare(q).
+			ExpectExec().
+			WithArgs(sqlmock.AnyArg(), task.Title, task.Description,
+				sqlmock.AnyArg(), sqlmock.AnyArg()).
+			WillReturnResult(sqlmock.NewResult(1, 1))
+
+		err := s.repo.Insert(context.TODO(),task)
+		s.Nil(err)
+	})
+
+	s.Run("When the prepare context faild must return error", func() {
+		task := domain.NewTask("Title new", "Description new")
+		q := "INSERT task SET id=\\?, title=\\?, description=\\?, created_at=\\?, updated_at=\\?"
+		s.mockSQL.
+			ExpectPrepare(q).
+			WillReturnError(errors.New("prepare error"))
+
+		err := s.repo.Insert(context.TODO(),task)
+		s.Error(err)
+		s.Equal("query_prepare_ctx", err.Error())
+	})
+
+	s.Run("When the Exec stmt faild must return error", func() {
+		task := domain.NewTask("Title new", "Description new")
+
+		q := "INSERT task SET id=\\?, title=\\?, description=\\?, created_at=\\?, updated_at=\\?"
+		s.mockSQL.
+			ExpectPrepare(q).
+			ExpectExec().
+			WithArgs(sqlmock.AnyArg(), task.Title, task.Description,
+				sqlmock.AnyArg(), sqlmock.AnyArg()).
+			WillReturnError(errors.New("exec error"))
+
+		err := s.repo.Insert(context.TODO(),task)
+		s.Error(err)
+		s.Equal("query_exec", err.Error())
+	})
+
+	s.Run("When the Exec result send error must return error", func() {
+		task := domain.NewTask("title test 01", "description test 01")
+
+		q := "INSERT task SET id=\\?, title=\\?, description=\\?, created_at=\\?, updated_at=\\?"
+		s.mockSQL.ExpectPrepare(q).
+			ExpectExec().
+			WithArgs(sqlmock.AnyArg(), task.Title, task.Description, sqlmock.AnyArg(), sqlmock.AnyArg()).
+			WillReturnResult(sqlmock.NewErrorResult(errors.New("not_found")))
+
+		err := s.repo.Insert(context.TODO(),task)
+		s.NotNil(err)
+		s.Equal("query_exec", err.Error())
+	})
+
+	s.Run("When the Exec insert more than one task must return error", func() {
+		task := domain.NewTask("title test 01", "description test 01")
+
+		q := "INSERT task SET id=\\?, title=\\?, description=\\?, created_at=\\?, updated_at=\\?"
+		s.mockSQL.ExpectPrepare(q).
+			ExpectExec().
+			WithArgs(sqlmock.AnyArg(), task.Title, task.Description, sqlmock.AnyArg(), sqlmock.AnyArg()).
+			WillReturnResult(sqlmock.NewResult(1, 2))
+		err := s.repo.Insert(context.TODO(),task)
+		s.NotNil(err)
+		s.Equal("multi_insert", err.Error())
+	})
+}
+
 func (s *SuiteRepository) TestUpdate() {
 	s.Run("Success test return a task", func() {
 		task := domain.NewTask("title test 01", "description test 01")
@@ -364,78 +435,6 @@ func (s *SuiteRepository) TestUpdate() {
 		s.NotNil(err)
 		s.Equal("multi_update", err.Error())
 	})
-}
-
-func (s *SuiteRepository) TestInsert() {
-	s.Run("Success test return a task", func() {
-		task := domain.NewTask("Title new", "Description new")
-		q := "INSERT task SET id=\\?, title=\\?, description=\\?, created_at=\\?, updated_at=\\?"
-		s.mockSQL.
-			ExpectPrepare(q).
-			ExpectExec().
-			WithArgs(sqlmock.AnyArg(), task.Title, task.Description,
-				sqlmock.AnyArg(), sqlmock.AnyArg()).
-			WillReturnResult(sqlmock.NewResult(1, 1))
-
-		err := s.repo.Insert(context.TODO(),task)
-		s.Nil(err)
-	})
-
-	s.Run("When the prepare context faild must return error", func() {
-		task := domain.NewTask("Title new", "Description new")
-		q := "INSERT task SET id=\\?, title=\\?, description=\\?, created_at=\\?, updated_at=\\?"
-		s.mockSQL.
-			ExpectPrepare(q).
-			WillReturnError(errors.New("prepare error"))
-
-		err := s.repo.Insert(context.TODO(),task)
-		s.Error(err)
-		s.Equal("query_prepare_ctx", err.Error())
-	})
-
-	s.Run("When the Exec stmt faild must return error", func() {
-		task := domain.NewTask("Title new", "Description new")
-
-		q := "INSERT task SET id=\\?, title=\\?, description=\\?, created_at=\\?, updated_at=\\?"
-		s.mockSQL.
-			ExpectPrepare(q).
-			ExpectExec().
-			WithArgs(sqlmock.AnyArg(), task.Title, task.Description,
-				sqlmock.AnyArg(), sqlmock.AnyArg()).
-			WillReturnError(errors.New("exec error"))
-
-		err := s.repo.Insert(context.TODO(),task)
-		s.Error(err)
-		s.Equal("query_exec", err.Error())
-	})
-
-	s.Run("When the Exec result send error must return error", func() {
-		task := domain.NewTask("title test 01", "description test 01")
-
-		q := "INSERT task SET id=\\?, title=\\?, description=\\?, created_at=\\?, updated_at=\\?"
-		s.mockSQL.ExpectPrepare(q).
-			ExpectExec().
-			WithArgs(sqlmock.AnyArg(), task.Title, task.Description, sqlmock.AnyArg(), sqlmock.AnyArg()).
-			WillReturnResult(sqlmock.NewErrorResult(errors.New("not_found")))
-
-		err := s.repo.Insert(context.TODO(),task)
-		s.NotNil(err)
-		s.Equal("query_exec", err.Error())
-	})
-
-	s.Run("When the Exec insert more than one task must return error", func() {
-		task := domain.NewTask("title test 01", "description test 01")
-
-		q := "INSERT task SET id=\\?, title=\\?, description=\\?, created_at=\\?, updated_at=\\?"
-		s.mockSQL.ExpectPrepare(q).
-			ExpectExec().
-			WithArgs(sqlmock.AnyArg(), task.Title, task.Description, sqlmock.AnyArg(), sqlmock.AnyArg()).
-			WillReturnResult(sqlmock.NewResult(1, 2))
-		err := s.repo.Insert(context.TODO(),task)
-		s.NotNil(err)
-		s.Equal("multi_insert", err.Error())
-	})
-
 }
 
 func (s *SuiteRepository) TestDelete() {
